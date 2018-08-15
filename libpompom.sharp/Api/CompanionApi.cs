@@ -19,7 +19,6 @@ namespace Pompom
         private string userAgent;
         private string token;
 
-
         public Companion(string token, string userAgent = DEFAULT_WEBVIEW_USERAGENT)
         {
             // iOS or Android user agent + postfix
@@ -59,21 +58,40 @@ namespace Pompom
             return requestId.ToString();
         }
 
-        public async Task<IRestResponse<T>> Execute<T>(IRestRequest request) where T : new()
+        public Task<T> Execute<T>(IRestRequest request) where T : new()
         {
             var requestId = NewRequestId();
-            var response = await Execute<T>(request, requestId); // ¯\_(ツ)_/¯
+            var response = Execute<T>(request, requestId); // ¯\_(ツ)_/¯
             return response;
         }
 
-        public async Task<IRestResponse<T>> Execute<T>(IRestRequest request, string requestId) where T : new()
+        public async Task<T> Execute<T>(IRestRequest request, string requestId) where T : new()
+        {
+            var response = await Request<T>(request, requestId);
+            if (response.ErrorException != null)
+            {
+                const string message = "Error retrieving response. Check inner details for more info.";
+                throw new ApplicationException(message, response.ErrorException);
+            }
+
+            return response.Data;
+        }
+
+        public Task<IRestResponse<T>> Request<T>(IRestRequest request) where T : new()
+        {
+            var requestId = NewRequestId();
+            var response = Request<T>(request, requestId); // ¯\_(ツ)_/¯
+            return response;
+        }
+
+        public Task<IRestResponse<T>> Request<T>(IRestRequest request, string requestId) where T : new()
         {
             // https://github.com/restsharp/RestSharp/wiki/Recommended-Usage
             var client = NewRestClient();
-            PrepareRequest(request, requestId);            
+            PrepareRequest(request, requestId);
 
             // Send a request
-            var response = await client.ExecuteTaskAsync<T>(request);
+            var response = client.ExecuteTaskAsync<T>(request);
             return response;
         }
     }

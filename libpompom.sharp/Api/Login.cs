@@ -29,7 +29,7 @@ namespace Pompom
             request.AddQueryParameter("token", this.token);
             request.AddQueryParameter("uid", uid);
             request.AddQueryParameter("request_id", requestId);
-            
+
             // TODO
             //Execute<object>();
         }
@@ -39,7 +39,7 @@ namespace Pompom
             var request = new RestRequest("login/region", Method.GET);
             PrepareLoginRequest(request);
 
-            // .. 
+            // ..
             throw new NotImplementedException("response");
         }
 
@@ -48,7 +48,7 @@ namespace Pompom
             var request = new RestRequest("login/character", Method.GET);
             PrepareLoginRequest(request);
 
-            // .. 
+            // ..
             throw new NotImplementedException("response");
         }
 
@@ -57,7 +57,7 @@ namespace Pompom
             // TODO: Need LocaleInfo too
             var request = new RestRequest("login/characters/{char_id}", Method.GET);
             PrepareLoginRequest(request);
-            request.AddUrlSegment("char_id", characterId.ToString());            
+            request.AddUrlSegment("char_id", characterId.ToString());
 
             throw new NotImplementedException("response");
             // TODO
@@ -68,7 +68,7 @@ namespace Pompom
             var request = new RestRequest("login/characters", Method.GET);
             PrepareLoginRequest(request);
 
-            // .. 
+            // ..
             throw new NotImplementedException("response");
         }
     }
