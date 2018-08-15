@@ -1,10 +1,11 @@
+using Newtonsoft.Json;
 using RestSharp.Deserializers;
 
 namespace Pompom.Models.Response
 {
     public class PurchaseItemResponse
     {
-        [DeserializeAs(Name = "gil")]
+        [JsonProperty("gil")]
         public int Gil { get; set; }
     }
 }

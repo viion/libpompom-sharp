@@ -331,3 +331,6 @@ ASALocalRun/
 
 # Line Ending Unifier
 .leu
+
+# Visual Studio Code
+.vscode/

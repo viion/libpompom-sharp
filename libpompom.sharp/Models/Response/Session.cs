@@ -1,17 +1,18 @@
 using System;
+using Newtonsoft.Json;
 using RestSharp.Deserializers;
 
 namespace Pompom.Models.Response
 {
     public class GenerateTokenResponse
     {
-        [DeserializeAs(Name = "token")]
+        [JsonProperty("token")]
         public string Token { get; set; }
 
-        [DeserializeAs(Name = "salt")]
+        [JsonProperty("salt")]
         public string Salt { get; set; }
 
-        [DeserializeAs(Name = "region")]
+        [JsonProperty("region")]
         public string Region { get; set; }
 
     }

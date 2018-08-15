@@ -2,7 +2,8 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using RestSharp;
-using RestSharp.Deserializers;
+using RestSharp.Serializers;
+using RestSharp.Serializers.Newtonsoft.Json;
 
 namespace Pompom
 {
@@ -18,23 +19,33 @@ namespace Pompom
 
         private const string IOS_USER_AGENT = "ffxivcomapp-j/1.0.0.5 CFNetwork/902.2 Darwin/17.7.0";
         private const string ANDROID_USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; Moto G (4) Build/NPJ25.93-14; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 XIV-Companion for Android";
-        
+
+        private RestClient client;
+        private ISerializer jsonSerializer;
+
         public string UserAgent { get; set; } = IOS_USER_AGENT;
 
-        public int MaxTries { get; set; } = 5;
+        public int MaxTries { get; set; } = 10;
         public int PollingInterval { get; set; } = 1500;
 
         /// <summary>
         /// This can be null for initial handshake and if so it won't be sent to the server.
         /// </summary>
         public string Token { get; set; }
-        
-        protected RestClient NewRestClient()
-        {
-            var client = new RestClient(BASE_API_URI);
-            client.UserAgent = UserAgent;
 
-            return client;
+        public Companion()
+        {
+            this.client = new RestClient(BASE_API_URI);
+            this.client.AddHandler("application/json", NewtonsoftJsonSerializer.Default);
+            this.client.AddHandler("text/json", NewtonsoftJsonSerializer.Default);
+            this.client.AddHandler("text/x-json", NewtonsoftJsonSerializer.Default);
+            this.client.AddHandler("text/javascript", NewtonsoftJsonSerializer.Default);
+            this.client.AddHandler("*+json", NewtonsoftJsonSerializer.Default);
+
+            this.client.UserAgent = UserAgent;
+            this.client.Proxy = new WebProxy("127.0.0.1", 8888);
+
+            this.jsonSerializer = new RestSharp.Serializers.Newtonsoft.Json.NewtonsoftJsonSerializer();
         }
 
         /// <summary>
@@ -44,14 +55,18 @@ namespace Pompom
         /// <param name="requestId">A request id.</param>
         public void PrepareRequest(IRestRequest request, string requestId)
         {
+            //request.JsonSerializer = this.jsonSerializer;
+            request.JsonSerializer = RestSharp.Serializers.Newtonsoft.Json.NewtonsoftJsonSerializer.Default;
+            request.JsonSerializer.ContentType = "application/json;charset=utf-8";
+            request.AddHeader("Accept", "*/*");
+
             // Set http headers
             if (Token != null)
             {
                 request.AddHeader("token", Token);
             }
-            
-            request.AddHeader("request-id", requestId);
-            request.JsonSerializer = new RestSharp.Serializers.Newtonsoft.Json.NewtonsoftJsonSerializer(); // TODO: Cache it
+
+            request.AddHeader("request-id", requestId.ToUpper());
         }
 
         /// <summary>
@@ -100,13 +115,12 @@ namespace Pompom
         public async Task<IRestResponse<T>> Request<T>(IRestRequest request, string requestId) where T : new()
         {
             // https://github.com/restsharp/RestSharp/wiki/Recommended-Usage
-            var client = NewRestClient();
             PrepareRequest(request, requestId);
 
             // Send a request
             for (var i = 0; i < MaxTries; i++)
             {
-                var response = await client.ExecuteTaskAsync<T>(request);
+                var response = await this.client.ExecuteTaskAsync<T>(request);
                 if (response.StatusCode != HTTP_STATUS_PENDING)
                 {
                     return response;

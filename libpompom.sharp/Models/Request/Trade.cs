@@ -1,29 +1,29 @@
 using System;
-using RestSharp.Deserializers;
+using Newtonsoft.Json;
 
 namespace Pompom.Models.Request
 {
     public class ChangePrice
     {
-        [DeserializeAs(Name = "transactionId")]
+        [JsonProperty("transactionId")]
         public string TransactionId { get; set; }
 
-        [DeserializeAs(Name = "sellPrice")]
+        [JsonProperty("sellPrice")]
         public string SellPrice { get; set; }
     }
 
     public class PurchaseItem
     {
-        [DeserializeAs(Name = "transactionId")]
+        [JsonProperty("transactionId")]
         public string TransactionId { get; set; }
 
-        [DeserializeAs(Name = "price")]
+        [JsonProperty("price")]
         public int Price { get; set; }
 
-        [DeserializeAs(Name = "itemId")]
+        [JsonProperty("itemId")]
         public string ItemId { get; set; }
 
-        [DeserializeAs(Name = "catalogId")]
+        [JsonProperty("catalogId")]
         public string CatalogueId { get; set; }
     }
 }
