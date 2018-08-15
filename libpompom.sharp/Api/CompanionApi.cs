@@ -51,6 +51,7 @@ namespace Pompom
             }
             
             request.AddHeader("request-id", requestId);
+            request.JsonSerializer = new RestSharp.Serializers.Newtonsoft.Json.NewtonsoftJsonSerializer(); // TODO: Cache it
         }
 
         /// <summary>

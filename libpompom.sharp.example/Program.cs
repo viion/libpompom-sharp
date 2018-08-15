@@ -15,7 +15,7 @@ namespace libpompom.sharp.example
             var token = companion.GenerateToken(new Pompom.Models.Request.DeviceInfo
             {
                 Platform = Pompom.Models.PlatformType.Apple,
-                Uuid = Guid.NewGuid().ToString(),
+                Uuid = "Please look forward to it",
             }).Result;
 
             Console.WriteLine($"Generated token={token.Token} salt={token.Salt}");

@@ -1,7 +1,6 @@
 using System;
 using Xunit;
 using Pompom;
-using Pompom.Testing.Httpbin;
 using RestSharp;
 using System.Threading.Tasks;
 

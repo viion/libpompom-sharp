@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using RestSharp.Deserializers;
 
@@ -8,8 +7,11 @@ namespace Pompom.Models.Request
     public class DeviceInfo
     {
         /// <summary>
-        /// Random uuid string.
+        /// Device id.
         /// </summary>
+        /// <remarks>
+        /// You need to sign a uuid you choose with a public key which was shipped with the companion app.
+        /// </remarks>
         [JsonProperty("uid")]
         public string Uuid { get; set; }
 

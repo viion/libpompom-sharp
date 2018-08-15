@@ -13,7 +13,6 @@ namespace Pompom
         public Task<GenerateTokenResponse> GenerateToken(DeviceInfo device)
         {
             var request = new RestRequest("login/token", Method.POST);
-            request.JsonSerializer = new RestSharp.Serializers.Newtonsoft.Json.NewtonsoftJsonSerializer();
             request.AddJsonBody(device);
 
             return Execute<GenerateTokenResponse>(request);
