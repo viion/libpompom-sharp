@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using RestSharp.Deserializers;
 
 namespace Pompom.Models.Request
@@ -8,10 +10,10 @@ namespace Pompom.Models.Request
         /// <summary>
         /// Random uuid string.
         /// </summary>
-        [DeserializeAs(Name = "uid")]
+        [JsonProperty("uid")]
         public string Uuid { get; set; }
 
-        [DeserializeAs(Name = "platform")]
+        [JsonProperty("platform")]
         public PlatformType Platform { get; set; }
     }
 

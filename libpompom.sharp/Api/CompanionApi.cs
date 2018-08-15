@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using RestSharp;
 using RestSharp.Deserializers;
@@ -7,29 +8,31 @@ namespace Pompom
 {
     public partial class Companion
     {
+        private const HttpStatusCode HTTP_STATUS_PENDING = HttpStatusCode.Accepted; // lol SE
+
 #if HTTPBIN
         private const string BASE_API_URI = "http://httpbin.org/get";
 #else
         private const string BASE_API_URI = "https://companion.finalfantasyxiv.com/sight-v060/sight/";
 #endif
 
-        private const string DEFAULT_WEBVIEW_USERAGENT = @"Mozilla/5.0 (Linux; Android 7.0; Moto G (4) Build/NPJ25.93-14; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36";
-        private const string USER_AGENT_POSTFIX = "XIV-Companion for Android";
+        private const string IOS_USER_AGENT = "ffxivcomapp-j/1.0.0.5 CFNetwork/902.2 Darwin/17.7.0";
+        private const string ANDROID_USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; Moto G (4) Build/NPJ25.93-14; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/56.0.2924.87 Mobile Safari/537.36 XIV-Companion for Android";
+        
+        public string UserAgent { get; set; } = IOS_USER_AGENT;
 
-        private string userAgent;
-        private string token;
+        public int MaxTries { get; set; } = 5;
+        public int PollingInterval { get; set; } = 1500;
 
-        public Companion(string token, string userAgent = DEFAULT_WEBVIEW_USERAGENT)
-        {
-            // iOS or Android user agent + postfix
-            this.userAgent = $"{userAgent} {USER_AGENT_POSTFIX}";
-            this.token = token;
-        }
-
+        /// <summary>
+        /// This can be null for initial handshake and if so it won't be sent to the server.
+        /// </summary>
+        public string Token { get; set; }
+        
         protected RestClient NewRestClient()
         {
             var client = new RestClient(BASE_API_URI);
-            client.UserAgent = this.userAgent;
+            client.UserAgent = UserAgent;
 
             return client;
         }
@@ -42,7 +45,11 @@ namespace Pompom
         public void PrepareRequest(IRestRequest request, string requestId)
         {
             // Set http headers
-            request.AddHeader("token", this.token);
+            if (Token != null)
+            {
+                request.AddHeader("token", Token);
+            }
+            
             request.AddHeader("request-id", requestId);
         }
 
@@ -68,10 +75,15 @@ namespace Pompom
         public async Task<T> Execute<T>(IRestRequest request, string requestId) where T : new()
         {
             var response = await Request<T>(request, requestId);
+
             if (response.ErrorException != null)
             {
-                const string message = "Error retrieving response. Check inner details for more info.";
-                throw new ApplicationException(message, response.ErrorException);
+                throw new ApplicationException("Error retrieving response. Check inner details for more info.", response.ErrorException);
+            }
+
+            if (!response.IsSuccessful)
+            {
+                throw new ApplicationException("Server returned an error.");
             }
 
             return response.Data;
@@ -84,15 +96,25 @@ namespace Pompom
             return response;
         }
 
-        public Task<IRestResponse<T>> Request<T>(IRestRequest request, string requestId) where T : new()
+        public async Task<IRestResponse<T>> Request<T>(IRestRequest request, string requestId) where T : new()
         {
             // https://github.com/restsharp/RestSharp/wiki/Recommended-Usage
             var client = NewRestClient();
             PrepareRequest(request, requestId);
 
             // Send a request
-            var response = client.ExecuteTaskAsync<T>(request);
-            return response;
+            for (var i = 0; i < MaxTries; i++)
+            {
+                var response = await client.ExecuteTaskAsync<T>(request);
+                if (response.StatusCode != HTTP_STATUS_PENDING)
+                {
+                    return response;
+                }
+
+                await Task.Delay(PollingInterval);
+            }
+
+            throw new TimeoutException("Server is busy");
         }
     }
 }

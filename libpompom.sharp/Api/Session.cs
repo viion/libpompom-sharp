@@ -3,70 +3,66 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
+using Pompom.Models.Request;
+using Pompom.Models.Response;
 
 namespace Pompom
 {
     public partial class Companion
     {
-        /// <summary>
-        /// Setup common headers used in login.
-        /// </summary>
-        /// <param name=""></param>
-        /// <param name="method"></param>
-        /// <returns></returns>
-        private void PrepareLoginRequest(IRestRequest request)
+        public Task<GenerateTokenResponse> GenerateToken(DeviceInfo device)
         {
-            request.AddHeader("domain-type", "global");
+            var request = new RestRequest("login/token", Method.POST);
+            request.JsonSerializer = new RestSharp.Serializers.Newtonsoft.Json.NewtonsoftJsonSerializer();
+            request.AddJsonBody(device);
+
+            return Execute<GenerateTokenResponse>(request);
         }
 
-        public async Task Login(string uid)
+        public Task Login(string uid)
         {
             var request = new RestRequest("login/auth", Method.POST);
-            PrepareLoginRequest(request);
 
             var requestId = NewRequestId();
 
-            request.AddQueryParameter("token", this.token);
+            request.AddQueryParameter("token", Token);
             request.AddQueryParameter("uid", uid);
             request.AddQueryParameter("request_id", requestId);
 
             // TODO
             //Execute<object>();
+            throw new NotImplementedException();
         }
 
-        public async Task GetRegions()
+        public Task GetRegions()
         {
             var request = new RestRequest("login/region", Method.GET);
-            PrepareLoginRequest(request);
 
             // ..
             throw new NotImplementedException("response");
         }
 
-        public async Task GetCharacter()
+        public Task GetCharacter()
         {
             var request = new RestRequest("login/character", Method.GET);
-            PrepareLoginRequest(request);
 
             // ..
             throw new NotImplementedException("response");
         }
 
-        public async Task PostCharacter(ulong characterId)
+        public Task PostCharacter(ulong characterId)
         {
             // TODO: Need LocaleInfo too
             var request = new RestRequest("login/characters/{char_id}", Method.GET);
-            PrepareLoginRequest(request);
             request.AddUrlSegment("char_id", characterId.ToString());
 
             throw new NotImplementedException("response");
             // TODO
         }
 
-        public async Task GetCharacters()
+        public Task GetCharacters()
         {
             var request = new RestRequest("login/characters", Method.GET);
-            PrepareLoginRequest(request);
 
             // ..
             throw new NotImplementedException("response");
