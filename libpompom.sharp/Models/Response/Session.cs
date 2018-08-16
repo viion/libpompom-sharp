@@ -1,11 +1,21 @@
 using System;
 using Newtonsoft.Json;
-using RestSharp.Deserializers;
+using Flurl;
+using Flurl.Util;
+using System.Security.Cryptography;
+using System.Text;
+using System.Buffers.Text;
 
 namespace Pompom.Models.Response
 {
-    public class GenerateTokenResponse
+    public class TokenResponse
     {
+        private const string SQEX_AUTH_URI = "https://secure.square-enix.com/oauth/oa/oauthauth";
+        private const string SQEX_LOGIN_URI = "https://secure.square-enix.com/oauth/oa/oauthlogin";
+        
+        private const string OAUTH_APP_ID = "ffxiv_comapp";
+        private const string OAUTH_CALLBACK = "https://companion.finalfantasyxiv.com/api/0/auth/callback";
+
         [JsonProperty("token")]
         public string Token { get; set; }
 
@@ -14,6 +24,56 @@ namespace Pompom.Models.Response
 
         [JsonProperty("region")]
         public string Region { get; set; }
+        
+        public string GetOAuthUri(string userId)
+        {
+            var redirectUri = BuildOAuthRedirectUri(userId);
 
+            var uri = SQEX_AUTH_URI.SetQueryParams(new
+            {
+                client_id = OAUTH_APP_ID,
+                lang = "en-us",
+                response_type = "code",
+                redirect_uri = redirectUri,
+            });
+
+            return uri.ToString();
+        }
+
+        private string BuildOAuthRedirectUri(string userId)
+        {
+            var encryptedUserId = EncryptUserId(userId);
+            var uri = OAUTH_CALLBACK.SetQueryParams(new
+            {
+                token = Token,
+                uid = encryptedUserId,
+                request_id = Companion.NewRequestId(),
+            });
+
+            return uri.ToString();
+        }
+
+        private string EncryptUserId(string uid)
+        {
+            const int DIGEST_LENGTH = 1024;
+
+            var saltData = Encoding.UTF8.GetBytes(Salt);
+
+            // uid passed to oauth is encrypted with PBKDF2
+            // where PRF is SHA1, salt is `app_salt`, the number of iterations is 1000 and and digest length is 1024
+            using (var pbkdf2 = new Rfc2898DeriveBytes(uid, saltData, 1000))
+            {
+                var keyData = pbkdf2.GetBytes(DIGEST_LENGTH / 8);
+
+                // Converts a key to the hex string
+                var buffer = new StringBuilder(keyData.Length * 2);
+                for (var i = 0; i < keyData.Length; i++)
+                {
+                    buffer.AppendFormat("{0:x2}", keyData[i]);
+                }
+
+                return buffer.ToString();
+            }
+        }
     }
 }

@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using System.Text;
-using RestSharp;
-using RestSharp.Serializers.Newtonsoft.Json;
 using Pompom.Models;
 using Pompom.Models.Request;
 using Pompom.Models.Response;
@@ -11,18 +9,30 @@ using System.IO;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Encodings;
-using JsonRequest = RestSharp.Serializers.Newtonsoft.Json.RestRequest;
+using Flurl.Http;
 
 namespace Pompom
 {
     public partial class Companion
     {
-        public Task<GenerateTokenResponse> GenerateToken(DeviceInfo device)
+        public Task<TokenResponse> GetToken(string uid, PlatformType platform = PlatformType.Android)
         {
-            var request = new JsonRequest("login/token", Method.POST);
-            request.AddJsonBody(device);
+            var signedUid = EncryptUserId(uid);
+            return GetToken(new DeviceInfo
+            {
+                Uid = signedUid,
+                Platform = platform
+            });
+        }
 
-            return Execute<GenerateTokenResponse>(request);
+        public Task<TokenResponse> GetToken(DeviceInfo info)
+        {
+            return Request(new CompanionRequest<TokenResponse>
+            {
+                Resource = "login/token",
+                Send = (x) => x.PostJsonAsync(info),
+                Map = (x) => x.ReceiveJson<TokenResponse>()
+            });
         }
 
         private string EncryptUserId(string uid)
@@ -50,25 +60,15 @@ namespace Pompom
                     {
                         var chunkSize = Math.Min(blockSize, length - chunkPos);
 
-                        var chunk = engine.ProcessBlock(uidBytes, chunkPos, chunkSize);
-                        buffer.Write(chunk, 0, chunk.Length);
+                        var block = engine.ProcessBlock(uidBytes, chunkPos, chunkSize);
+                        buffer.Write(block, 0, block.Length);
                     }
 
                     return Convert.ToBase64String(buffer.ToArray());
                 }
             }
         }
-
-        public Task<GenerateTokenResponse> GenerateToken(string uid, PlatformType platform = PlatformType.Android)
-        {
-            var signedUid = EncryptUserId(uid);
-            return GenerateToken(new DeviceInfo
-            {
-                Uid = signedUid,
-                Platform = platform
-            });
-        }
-
+        /*
         public Task Login(string uid)
         {
             var request = new JsonRequest("login/auth", Method.POST);
@@ -116,6 +116,6 @@ namespace Pompom
 
             // ..
             throw new NotImplementedException("response");
-        }
+        }*/
     }
 }

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "libpompom.sharp", "libpompo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "libpompom.sharp.tests", "libpompom.sharp.tests\libpompom.sharp.tests.csproj", "{B01DC074-832D-4A5E-B2BA-D93268967434}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libpompom.sharp.example", "libpompom.sharp.example\libpompom.sharp.example.csproj", "{9C3705EF-2043-423A-AE54-18E0461FC349}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "libpompom.sharp.example", "libpompom.sharp.example\libpompom.sharp.example.csproj", "{76D71962-AF68-4389-8153-38A558ACC0F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{B01DC074-832D-4A5E-B2BA-D93268967434}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B01DC074-832D-4A5E-B2BA-D93268967434}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B01DC074-832D-4A5E-B2BA-D93268967434}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C3705EF-2043-423A-AE54-18E0461FC349}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C3705EF-2043-423A-AE54-18E0461FC349}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C3705EF-2043-423A-AE54-18E0461FC349}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C3705EF-2043-423A-AE54-18E0461FC349}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76D71962-AF68-4389-8153-38A558ACC0F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76D71962-AF68-4389-8153-38A558ACC0F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76D71962-AF68-4389-8153-38A558ACC0F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76D71962-AF68-4389-8153-38A558ACC0F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

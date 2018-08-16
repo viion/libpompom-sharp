@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using RestSharp.Deserializers;
 
 namespace Pompom.Models.Response
 {
