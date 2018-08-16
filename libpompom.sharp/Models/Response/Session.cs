@@ -1,13 +1,74 @@
-using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Flurl;
-using Flurl.Util;
 using System.Security.Cryptography;
 using System.Text;
-using System.Buffers.Text;
 
 namespace Pompom.Models.Response
 {
+    public class CharacterAccountResponse
+    {
+        [JsonProperty("updatedAt")]
+        public long UpdatedAt { get; set; }
+
+        [JsonProperty("apiParameters")]
+        public ApiParametersInfo ApiParameters { get; set; }
+
+        [JsonProperty("accounts")]
+        public List<AccountInfo> Account { get; set; }
+
+        public class AccountInfo
+        {
+            [JsonProperty("accName")]
+            public string Name { get; set; }
+
+            [JsonProperty("role")]
+            public int Role { get; set; }
+
+            [JsonProperty("contractEndTime")]
+            public long ContractEndTime { get; set; }
+
+            [JsonProperty("xDay")]
+            public int XDay { get; set; }
+
+            [JsonProperty("characters")]
+            public List<CharacterInfo> Characters { get; set; }
+        }
+
+        public class CharacterInfo
+        {
+            [JsonProperty("cid")]
+            public string CharacterId { get; set; }
+
+            [JsonProperty("name")]
+            public string Name { get; set; }
+
+            [JsonProperty("world")]
+            public string World { get; set; }
+
+            [JsonProperty("status")]
+            public int Status { get; set; }
+
+            [JsonProperty("faceUrl")]
+            public string FaceUri { get; set; }
+
+            [JsonProperty("bodyUrl")]
+            public string BodyUri { get; set; }
+
+            [JsonProperty("lodestonecid")]
+            public string LodestoneCharacterId { get; set; }
+
+            [JsonProperty("isRenamed")]
+            public bool Renamed { get; set; }
+        }
+
+        public class ApiParametersInfo
+        {
+            [JsonProperty("lodestoneUrlTemplate")]
+            public string LodestoneUriTemplate { get; set; }
+        }
+    }
+
     public class TokenResponse
     {
         private const string SQEX_AUTH_URI = "https://secure.square-enix.com/oauth/oa/oauthauth";

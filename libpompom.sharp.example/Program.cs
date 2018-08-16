@@ -15,12 +15,29 @@ namespace Pompom.Examples
             var token = await api.GetToken(userId);
             Console.WriteLine($"Token={token.Token} Salt={token.Salt}");
 
+            // Get OAuth login uri
             var uri = token.GetOAuthUri(userId);
-            Console.WriteLine($"OAuth request: {uri}");
-            Process.Start(uri);
+            Console.WriteLine($"Login request: {uri}");
+            Process.Start(new ProcessStartInfo
+            {
+                UseShellExecute = true,
+                FileName = uri,
+            });
 
-            Console.WriteLine($"Press enter to continue..");
+            // Wait for the enter key
             Console.ReadLine();
+
+            // We have a token now lol
+            api.Token = token.Token;
+
+            // Account info
+            var accountInfo = await api.GetCharacters();
+            foreach(var character in accountInfo.Account[0].Characters)
+            {
+                Console.WriteLine($"{character.Name}: {character.CharacterId}");
+                Console.WriteLine($"Face image: {character.FaceUri}");
+                Console.WriteLine($"Body image: {character.BodyUri}");
+            }
         }
     }
 }

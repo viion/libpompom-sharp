@@ -68,6 +68,16 @@ namespace Pompom
                 }
             }
         }
+
+        public Task<CharacterAccountResponse> GetCharacters()
+        {
+            return Request(new CompanionRequest<CharacterAccountResponse>
+            {
+                Resource = "login/characters",
+                Send = (x) => x.GetAsync(),
+                Map = (x) => x.ReceiveJson<CharacterAccountResponse>()
+            });
+        }
         /*
         public Task Login(string uid)
         {
