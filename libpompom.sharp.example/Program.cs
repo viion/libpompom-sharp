@@ -11,7 +11,7 @@ namespace Pompom.Examples
         {
             var userId = Guid.NewGuid().ToString();
             var api = new Companion();
-
+            
             var token = await api.GetToken(userId);
             Console.WriteLine($"Token={token.Token} Salt={token.Salt}");
 
@@ -27,7 +27,7 @@ namespace Pompom.Examples
             // Wait for the enter key
             Console.ReadLine();
 
-            // We have a token now lol
+            // Now we have a token. Have fun with the API.
             api.Token = token.Token;
 
             // Account info
@@ -38,6 +38,9 @@ namespace Pompom.Examples
                 Console.WriteLine($"Face image: {character.FaceUri}");
                 Console.WriteLine($"Body image: {character.BodyUri}");
             }
+
+            var retainers = await api.GetRetainers();
+
         }
     }
 }

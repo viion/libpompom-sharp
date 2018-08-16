@@ -6,6 +6,11 @@ using System.Text;
 
 namespace Pompom.Models.Response
 {
+    public class CharacterDetailResponse
+    {
+        // TODO
+    }
+
     public class CharacterAccountResponse
     {
         [JsonProperty("updatedAt")]

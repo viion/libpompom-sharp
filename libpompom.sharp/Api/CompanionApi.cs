@@ -30,8 +30,9 @@ namespace Pompom
         /// </summary>
         /// <remarks>
         /// TODO: 3.5 seconds are expected. stuff, etc..
+        /// TODO: API related in-game stuff takes a whole minute to complete if you're logged in the game lol.
         /// </remarks>
-        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30.0);
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(3);
 
         /// <summary>
         /// This can be null for initial handshake and if so it won't be sent to the server.
@@ -94,7 +95,7 @@ namespace Pompom
         {
             Setup = (x) => x;
             Send = (_) => throw new InvalidOperationException("Method is not specified");
-            Map = (_) => default;
+            Map = (_) => Task.FromResult<T>(default);
         }
 
         public string Resource { get; set; } = "";

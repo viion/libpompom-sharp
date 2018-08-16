@@ -15,6 +15,16 @@ namespace Pompom
 {
     public partial class Companion
     {
+        public Task<LoginStatusResponse> GetLoginStatus()
+        {
+            // Note: StatusCode == 500 is expected but doesn't handle anything yet.
+            return Request(new CompanionRequest<LoginStatusResponse>
+            {
+                Resource = "character/login-status",
+                Send = (x) => x.GetAsync(),
+                Map = (x) => x.ReceiveJson<LoginStatusResponse>(),
+            });
+        }
 
         /*
         public Task<PurchaseItemResponse> PurchaseItem(int num, PurchaseItem info)

@@ -35,6 +35,15 @@ namespace Pompom
             });
         }
 
+        public async Task DeleteToken()
+        {
+            await Request(new CompanionRequest<object>
+            {
+                Resource = "login/auth",
+                Send = (x) => x.DeleteAsync(),
+            });
+        }
+
         private string EncryptUserId(string uid)
         {
             using (var certText = new StringReader(Properties.Resources.Token))
